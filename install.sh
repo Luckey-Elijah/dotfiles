@@ -5,7 +5,36 @@ DOTFILES_DIR="$HOME/.dotfiles"
 REPO="https://github.com/Luckey-Elijah/dotfiles.git"
 BACKUP_DIR="$HOME/.dotfiles_backup/$(date +%Y%m%d%H%M%S)"
 
-# Clone or update repo
+# --- Homebrew ---
+if ! command -v brew &>/dev/null; then
+  echo "Installing Homebrew..."
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+  # Ensure brew is on PATH for the rest of this script
+  if [ -f /opt/homebrew/bin/brew ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  elif [ -f /usr/local/bin/brew ]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+  fi
+else
+  echo "Homebrew already installed."
+fi
+
+# --- Brew formulae ---
+FORMULAE=(cocoapods ffmpeg scrcpy yq zoxide)
+
+echo "Installing brew formulae: ${FORMULAE[*]}"
+brew install "${FORMULAE[@]}"
+
+# --- VS Code (cask) ---
+if ! brew list --cask visual-studio-code &>/dev/null; then
+  echo "Installing VS Code..."
+  brew install --cask visual-studio-code
+else
+  echo "VS Code already installed."
+fi
+
+# --- Dotfiles repo ---
 if [ -d "$DOTFILES_DIR" ]; then
   echo "Updating dotfiles repo..."
   git -C "$DOTFILES_DIR" pull --ff-only
@@ -14,7 +43,7 @@ else
   git clone "$REPO" "$DOTFILES_DIR"
 fi
 
-# Backup and symlink a file/directory
+# --- Symlinks ---
 link() {
   local src="$1"
   local dest="$2"
@@ -29,7 +58,6 @@ link() {
   echo "Linked $src -> $dest"
 }
 
-# Symlink zsh files
 link "$DOTFILES_DIR/zsh/.zshrc" "$HOME/.zshrc"
 link "$DOTFILES_DIR/zsh/.zshenv" "$HOME/.zshenv"
 link "$DOTFILES_DIR/zsh/.zsh_functions" "$HOME/.zsh_functions"
