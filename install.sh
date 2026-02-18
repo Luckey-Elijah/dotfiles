@@ -17,7 +17,12 @@ FORMULAE=(cocoapods ffmpeg scrcpy yq zoxide)
 echo "Installing brew formulae..."
 brew install "${FORMULAE[@]}"
 
-if ! brew list --cask visual-studio-code &>/dev/null; then
+# --- VS Code ---
+if [ -d "/Applications/Visual Studio Code.app" ]; then
+  echo "VS Code already installed."
+elif brew list --cask visual-studio-code &>/dev/null; then
+  echo "VS Code already installed (via brew)."
+else
   echo "Installing VS Code..."
   brew install --cask visual-studio-code
 fi
