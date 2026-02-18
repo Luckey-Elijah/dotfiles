@@ -9,16 +9,12 @@ BACKUP_DIR="$HOME/.dotfiles_backup/$(date +%Y%m%d%H%M%S)"
 if ! command -v brew &>/dev/null; then
   echo "Installing Homebrew..."
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  if [ -f /opt/homebrew/bin/brew ]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-  elif [ -f /usr/local/bin/brew ]; then
-    eval "$(/usr/local/bin/brew shellenv)"
-  fi
+  eval "$(/opt/homebrew/bin/brew shellenv 2>/dev/null || /usr/local/bin/brew shellenv 2>/dev/null)"
 fi
 
 # --- Brew Formulae & Casks ---
 FORMULAE=(cocoapods ffmpeg scrcpy yq zoxide)
-echo "Installing brew formulae: ${FORMULAE[*]}"
+echo "Installing brew formulae..."
 brew install "${FORMULAE[@]}"
 
 if ! brew list --cask visual-studio-code &>/dev/null; then
@@ -26,20 +22,31 @@ if ! brew list --cask visual-studio-code &>/dev/null; then
   brew install --cask visual-studio-code
 fi
 
+# --- Oh My Zsh ---
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+  echo "Installing Oh My Zsh..."
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+fi
+
+# --- Powerlevel10k ---
+P10K_DIR="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
+if [ ! -d "$P10K_DIR" ]; then
+  echo "Installing Powerlevel10k..."
+  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$P10K_DIR"
+fi
+
 # --- Puro ---
 if ! command -v puro &>/dev/null; then
-  echo "Installing Puro v1.5.0..."
-  curl -o- https://puro.dev/install.sh | PURO_VERSION="1.5.0" bash
-else
-  echo "Puro already installed."
+  echo "Installing Puro..."
+  curl -o- https://puro.dev/install.sh | PURO_VERSION="1.5.0" bash < /dev/null
 fi
 
 # --- Dotfiles Repo ---
 if [ -d "$DOTFILES_DIR" ]; then
-  echo "Updating dotfiles repo..."
+  echo "Updating dotfiles..."
   git -C "$DOTFILES_DIR" pull --ff-only
 else
-  echo "Cloning dotfiles repo..."
+  echo "Cloning dotfiles..."
   git clone "$REPO" "$DOTFILES_DIR"
 fi
 
@@ -47,22 +54,15 @@ fi
 link() {
   local src="$1"
   local dest="$2"
-
-  # Skip if the link already points to the correct source
   if [ -L "$dest" ] && [ "$(readlink "$dest")" = "$src" ]; then
     return
   fi
-
-  # If it's a symlink pointing elsewhere, remove it
   if [ -L "$dest" ]; then
     rm "$dest"
-  # If it's a real file/dir, back it up
   elif [ -e "$dest" ]; then
     mkdir -p "$BACKUP_DIR"
-    echo "Backing up $dest -> $BACKUP_DIR/"
     mv "$dest" "$BACKUP_DIR/"
   fi
-
   ln -sf "$src" "$dest"
   echo "Linked $src -> $dest"
 }
@@ -72,4 +72,4 @@ link "$DOTFILES_DIR/zsh/.zshenv" "$HOME/.zshenv"
 link "$DOTFILES_DIR/zsh/.zsh_functions" "$HOME/.zsh_functions"
 
 echo ""
-echo "Done! Restart your shell or run: source ~/.zshrc"
+echo "Done! Run the following to apply: source ~/.zshrc"

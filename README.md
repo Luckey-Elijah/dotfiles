@@ -1,17 +1,30 @@
 # dotfiles
 
+My macOS zsh environment setup — one command to install everything.
+
 ## Install
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Luckey-Elijah/dotfiles/main/install.sh | bash
 ```
 
-This will:
+Then reload your shell:
 
-1. Install [Homebrew](https://brew.sh) (if not already installed)
-2. Install formulae: `cocoapods`, `ffmpeg`, `scrcpy`, `yq`, `zoxide`
-3. Install [VS Code](https://code.visualstudio.com) via Homebrew cask
-4. Clone the repo to `~/.dotfiles` (or pull if it already exists)
-5. Back up any existing `.zshrc`, `.zshenv`, and `.zsh_functions` to
-   `~/.dotfiles_backup/<timestamp>/`
-6. Symlink the repo files into `$HOME`
+```bash
+source ~/.zshrc
+```
+
+## What gets installed
+
+| Category | Tools                                           |
+| -------- | ----------------------------------------------- |
+| Shell    | Oh My Zsh, Powerlevel10k                        |
+| Brew     | cocoapods, ffmpeg, scrcpy, yq, zoxide           |
+| Editor   | VS Code                                         |
+| Flutter  | Puro v1.5.0                                     |
+| Dotfiles | `.zshrc`, `.zshenv`, `.zsh_functions` symlinked |
+
+## Re-running
+
+The script is idempotent — safe to run again to pull the latest config
+changes. Existing files are backed up to `~/.dotfiles_backup/`.
