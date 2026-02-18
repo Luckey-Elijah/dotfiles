@@ -63,7 +63,9 @@ link() {
     mkdir -p "$BACKUP_DIR"
     mv "$dest" "$BACKUP_DIR/"
   fi
-  ln -sf "$src" "$dest"
+  # Remove dest if it still exists (e.g. directory edge case)
+  rm -rf "$dest"
+  ln -s "$src" "$dest"
   echo "Linked $src -> $dest"
 }
 
