@@ -48,10 +48,20 @@ link() {
   local src="$1"
   local dest="$2"
 
-  if [ -e "$dest" ] || [ -L "$dest" ]; then
+  # 1. If the exact symlink already exists and points to the right place, skip it.
+  if [ -L "$dest" ] && [ "$(readlink "$dest")" = "$src" ]; then
+    echo "Skipping: $dest already points to $src"
+    return
+  fi
+
+  # 2. If it's a symlink pointing elsewhere, just remove the link.
+  if [ -L "$dest" ]; then
+    rm "$dest"
+  # 3. If it's a real file/directory, back it up.
+  elif [ -e "$dest" ]; then
     mkdir -p "$BACKUP_DIR"
-    echo "Backing up $dest -> $BACKUP_DIR/"
     mv "$dest" "$BACKUP_DIR/"
+    echo "Backing up $dest -> $BACKUP_DIR/"
   fi
 
   ln -sf "$src" "$dest"
