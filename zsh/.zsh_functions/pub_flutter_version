@@ -1,0 +1,4 @@
+
+pub_flutter_version() {
+  yq e -r '.environment.flutter' pubspec.yaml
+}

@@ -1,0 +1,13 @@
+
+podfix() {
+  _cmd "flutter clean"
+  _cmd "cd ios"
+  _cmd "rm -rf Podfile.lock Pods"
+  _cmd "pod deintegrate"
+  _cmd "pod cache clean --all"
+  _cmd "cd .."
+  _cmd "flutter pub get"
+  _cmd "cd ios"
+  _cmd "pod install --repo-update"
+  _cmd "cd .."
+}

@@ -1,0 +1,6 @@
+
+brewup() {
+  _cmd "brew update"
+  _cmd "brew upgrade"
+  _cmd "brew cleanup"
+}

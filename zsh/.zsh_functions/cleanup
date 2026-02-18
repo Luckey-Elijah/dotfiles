@@ -1,0 +1,8 @@
+
+cleanup() {
+  _cmd "flutter clean"
+  _cmd "flutter pub get"
+  _cmd "dart run build_runner clean"
+  _cmd "dart run build_runner build -d"
+}
+

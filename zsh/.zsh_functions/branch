@@ -1,0 +1,37 @@
+branch() {
+  # Check for minimum arguments
+  if [ $# -lt 2 ]; then
+    echo "Usage: $0 <fix|feat|chore|pbi|bug> <numbers> <description>"
+    return 1
+  fi
+
+  type="$1"
+  numbers="$2"
+  shift 2
+  description="$*"
+
+  # Validate type
+  if [[ ! "$type" =~ ^(fix|feat|chore|pbi|bug)$ ]]; then
+    echo "First argument must be 'fix', 'feat', 'chore', 'pbi', or 'bug'"
+    return 1
+  fi
+
+  # Format description: lowercase, spaces to '-', remove non-alphanum except '-'
+  desc_formatted=$(echo "$description" | tr '[:upper:]' '[:lower:]' | sed 's/ /-/g' | sed 's/[^a-z0-9\-]//g')
+
+  # Validate numbers (can be single number or comma-separated numbers)
+  if [[ "$numbers" =~ ^[0-9]+(,[0-9]+)*$ ]]; then
+    branch="${type}(${numbers})/${desc_formatted}"
+  else
+    echo "Error: Numbers must be numeric values, optionally comma-separated (e.g., '12', '12,23,45')"
+    return 1
+  fi
+
+  # Create the branch, handle errors gracefully
+  if git checkout -b "$branch"; then
+    return 0;
+  else
+    echo "Error: Failed to create branch '$branch'"
+    return 1
+  fi
+}
