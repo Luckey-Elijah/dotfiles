@@ -1,19 +1,18 @@
 gwtd() {
-  if gum confirm "Remove worktree and branch?"; then
-    local cwd base branch root
+  local toplevel
+  toplevel=$(git rev-parse --show-toplevel) || return 1
 
-    cwd="$(pwd)"
-    worktree="$(basename "$cwd")"
-
-    # split on first `--`
-    root="${worktree%%--*}"
-    branch="${worktree#*--}"
-
-    # Protect against accidentially nuking a non-worktree directory
-    if [[ "$root" != "$worktree" ]]; then
-      cd "../$root"
-      git worktree remove "$worktree" --force
-      git branch -D "$branch"
-    fi
+  # Ensure we are actually in a worktree (containing '--')
+  if [[ ! "$(basename "$toplevel")" == *--* ]]; then
+    echo "Error: Not currently inside a generated worktree."
+    return 1
   fi
+
+  local base_dir="${toplevel%--*}"
+
+  # Move to the base directory before removal to avoid 'directory in use' errors
+  cd "$base_dir" || return 1
+
+  # Remove the worktree and the associated branch
+  git worktree remove "$toplevel"
 }
