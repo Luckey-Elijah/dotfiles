@@ -1,3 +1,0 @@
-FEAT=$1
-mkdir lib/src/features/$FEAT
-mkdir lib/src/features/$FEAT/{application,data,domain,presentation}

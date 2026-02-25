@@ -1,4 +1,3 @@
-
 cleanup() {
   _cmd "flutter clean"
   _cmd "flutter pub get"

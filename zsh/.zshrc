@@ -16,4 +16,4 @@ alias sim="open -a Simulator"
 
 # At the end of .zshrc
 fpath=(~/.zsh_functions $fpath)
-autoload -Uz _cmd podfix brewup cleanup pub_flutter_version branch lm featup
+autoload -Uz _cmd podfix brewup cleanup pub_flutter_version branch lm gwtu gwtd
