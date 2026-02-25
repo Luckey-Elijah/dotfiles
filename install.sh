@@ -49,7 +49,8 @@ fi
 # --- Dotfiles Repo ---
 if [ -d "$DOTFILES_DIR" ]; then
   echo "Updating dotfiles..."
-  git -C "$DOTFILES_DIR" pull --ff-only
+  git -C "$DOTFILES_DIR" fetch origin
+  git -C "$DOTFILES_DIR" reset --hard origin/main
 else
   echo "Cloning dotfiles..."
   git clone "$REPO" "$DOTFILES_DIR"
