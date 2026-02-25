@@ -11,5 +11,5 @@ gwtu() {
   local base=$(basename "$toplevel")
   local target="../${base}--${branch}"
 
-  git worktree add "$target" "$branch" && cd "$target"
+  git worktree add -b "$target" "$branch" && cd "$target"
 }
